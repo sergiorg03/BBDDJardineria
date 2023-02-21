@@ -49,29 +49,83 @@ SELECT c.NombreCliente
 -- 			Funciones agrupadas
 -- 7.	Obtener el código de oficina y la ciudad donde hay oficinas.
 
+SELECT o.codigoOficina, o.ciudad
+	FROM Oficinas o
+    GROUP BY o.codigoOficina, o.ciudad;
+	
 -- 8.	Sacar cuántos empleados hay en la compañía
+
+SELECT COUNT(*) numeroEmpleados
+	FROM Empleados;
 
 -- 9.	Sacar cuántos clientes tiene cada país
 
+SELECT c.pais, COUNT(*)
+	FROM Clientes c
+	GROUP BY c.pais;
+
 -- 10.	Sacar cuál fue el pago medio en 2009 (PISTA: usar la función YEAR de MySql)
+
+SELECT ROUND(AVG(p.cantidad))
+	FROM Pagos p
+	WHERE EXTRACT (YEAR FROM fechapago) = 2009;
 
 -- 11.	Sacar cuántos pedidos están en cada estado ordenado descendentemente por el número de pedido
 
+SELECT UPPER(p.estado), COUNT(*) Total
+	FROM Pedidos p
+	GROUP BY UPPER(p.estado)
+	ORDER BY Total;
+
 -- 12.	Sacar el precio más caro y el más barato de los productos
 
+SELECT MAX(p.precioVenta) Maximo, MIN(p.precioVenta) Minimo
+	FROM Productos p;
+	
 -- 13.	Obtener las gamas de productos que tengan más de 100 productos  (en la tabla productos)
+
+SELECT p.gama, COUNT(*)
+	FROM Productos p
+	GROUP BY p.gama
+	HAVING COUNT(*) > 100;
 
 -- 14.	Obtener el precio medio de proveedor de PRODUCTOS agrupando por proveedor de los proveedores que no empiecen por M y visualizando sólo los que la media es mayor de 15. 
 
+SELECT ROUND(AVG(p.PrecioProveedor), 2)
+	FROM Productos p
+	WHERE UPPER(p.proveedor) NOT LIKE 'M%'
+	GROUP BY p.Proveedor
+	HAVING AVG(p.PrecioProveedor) > 15;
 
 -- 			Consultas variadas
 -- 15.	Listado de los clientes indicando el nombre y cuántos pedidos han realizado
 
+SELECT c.nombreCliente, COUNT(pe.codigoPedido) cantidad
+	FROM Cliente c 
+			INNER JOIN Pedidos pe 	ON c.CodigoCliente = pe.CodigoCliente
+	GROUP BY c.nombreCliente;
+	
 -- 16.	Sacar un litado con los clientes y el total pagado por cada uno de ellos
+
+SELECT c.nombreCliente, SUM(p.Cantidad) Total
+	FROM Clientes c
+			INNER JOIN Pagos p 		ON c.codigoCliente = p.codigoCliente
+	GROUP BY c.nombreCliente;
 
 -- 17.	Nombre de los clientes que hayan hecho pedidos en 2008
 
+SELECT DISTINCT c.nombreCliente
+	FROM Clientes c
+			INNER JOIN Pedidos p 	ON c.codigoCliente = p.codigoCliente
+	WHERE EXTRACT (YEAR FROM p.fechaPedido) = '2008';
+
 -- 18.	Listar el nombre de cliente y nombre y apellido de sus representantes de aquellos clientes que no hayan realizado pagos
+
+SELECT c.nombreCliente, e.nombre, e.apellido1
+	FROM Clientes c
+			INNER JOIN Empleados e 	ON c.CodigoEmpleadoRepVentas = e.CodigoEmpleado
+			INNER JOIN Pagos p ON c.codigoCliente = p.CodigoCliente
+	WHERE 
 
 -- 19.	Sacar un listado de los clientes donde aparezca el nombre de su comercial y la ciudad donde está su oficina
 
